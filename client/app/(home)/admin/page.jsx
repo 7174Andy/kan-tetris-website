@@ -9,13 +9,12 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-
-// import password from .env
-const PASSWORD = process.env.PASSWORD;
+import { useRouter } from "next/navigation";
 
 export default function Admin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handlePasswordChange = (event) => {
     setError("");
@@ -44,6 +43,7 @@ export default function Admin() {
         .then((data) => {
           if (data.success) {
             alert("Password is correct!");
+            router.push("/admin/dashboard");
           } else {
             setError(data.message || "Incorrect password");
           }
