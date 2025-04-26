@@ -6,14 +6,20 @@ import {
   CardContent,
   Button,
   Typography,
+  InputAdornment,
   TextField,
+  IconButton,
 } from "@mui/material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 export default function Admin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handlePasswordChange = (event) => {
@@ -26,6 +32,7 @@ export default function Admin() {
       setError("Password cannot be empty");
       return;
     }
+    setLoading(true);
     try {
       fetch("/api/admin", {
         method: "POST",
@@ -51,6 +58,8 @@ export default function Admin() {
     } catch (error) {
       setError("An error occurred: " + error.message);
       setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -74,6 +83,25 @@ export default function Admin() {
             onChange={handlePasswordChange}
             error={!!error}
             helperText={error}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? (
+                        <VisibilityOffIcon />
+                      ) : (
+                        <VisibilityIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                type: showPassword ? "text" : "password",
+              },
+            }}
           />
           <Button
             variant="contained"
@@ -81,6 +109,7 @@ export default function Admin() {
             fullWidth
             sx={{ mt: 2 }}
             onClick={handleSubmit}
+            disabled={loading}
           >
             Submit
           </Button>
