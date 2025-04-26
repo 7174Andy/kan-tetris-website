@@ -50,6 +50,7 @@ export default function Admin() {
         .then((data) => {
           if (data.success) {
             alert("Password is correct!");
+            localStorage.setItem("admin", "true");
             router.push("/admin/dashboard");
           } else {
             setError(data.message || "Incorrect password");
@@ -92,9 +93,9 @@ export default function Admin() {
                       edge="end"
                     >
                       {showPassword ? (
-                        <VisibilityOffIcon />
-                      ) : (
                         <VisibilityIcon />
+                      ) : (
+                        <VisibilityOffIcon />
                       )}
                     </IconButton>
                   </InputAdornment>
