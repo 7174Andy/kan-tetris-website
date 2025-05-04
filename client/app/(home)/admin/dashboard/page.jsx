@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Alert,
+  Snackbar,
   Box,
   Button,
   Card,
@@ -16,6 +18,11 @@ export default function AdminDashboard() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [snack, setSnack] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
   useEffect(() => {
     const isAdmin = localStorage.getItem("admin");
@@ -40,7 +47,11 @@ export default function AdminDashboard() {
 
   const handleSubmit = async () => {
     if (!selectedImage) {
-      alert("Please select an image to upload.");
+      setSnack({
+        open: true,
+        message: "Please select an image to upload.",
+        severity: "warning",
+      });
       return;
     }
 
@@ -61,9 +72,14 @@ export default function AdminDashboard() {
       console.log("Response status:", response);
       const data = await response.json();
       console.log("Response data:", data);
+      setSelectedImage(null);
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Failed to upload image.");
+      setSnack({
+        open: true,
+        message: "Failed to upload image.",
+        severity: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -188,6 +204,20 @@ export default function AdminDashboard() {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={4000}
+        onClose={() => setSnack({ ...snack, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          onClose={() => setSnack({ ...snack, open: false })}
+          severity={snack.severity}
+          sx={{ width: "100%" }}
+        >
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
