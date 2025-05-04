@@ -1,3 +1,4 @@
+import dbConnect from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { OpenAI } from "openai";
 
@@ -86,6 +87,11 @@ export async function POST(req) {
   } catch (err) {
     console.error("Failed to parse JSON:", err);
     jsonResult = { error: "Invalid JSON returned from model." };
+  }
+
+  try {
+    await dbConnect();
+    // Save the result to the database if needed
   }
 
   return NextResponse.json({ result: jsonResult }, { status: 200 });
