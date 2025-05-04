@@ -44,7 +44,8 @@ export async function POST(req) {
         type: "function",
         function: {
           name: "analyze_image",
-          description: "Analyze the image and provide ranking.",
+          description:
+            "Analyze the provided image of the results of a Tetris game and provide ranking for each player.",
           parameters: {
             type: "object",
             properties: {
@@ -55,11 +56,13 @@ export async function POST(req) {
                   properties: {
                     nickname: {
                       type: "string",
-                      description: "Nickname of the player",
+                      description:
+                        "Nickname of the player displayed in the image",
                     },
                     ranking: {
                       type: "integer",
-                      description: "Ranking of the player",
+                      description:
+                        "Ranking of the player displayed in the image",
                     },
                   },
                   required: ["nickname", "ranking"],

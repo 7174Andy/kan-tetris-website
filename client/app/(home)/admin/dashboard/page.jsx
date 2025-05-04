@@ -1,11 +1,20 @@
 "use client";
 
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  CircularProgress,
+  Backdrop,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -39,6 +48,7 @@ export default function AdminDashboard() {
     formData.append("image", selectedImage);
 
     try {
+      setLoading(true);
       const response = await fetch("/api/calculate", {
         method: "POST",
         body: formData,
@@ -51,10 +61,11 @@ export default function AdminDashboard() {
       console.log("Response status:", response);
       const data = await response.json();
       console.log("Response data:", data);
-      alert("Image uploaded successfully!");
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("Failed to upload image.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,7 +79,15 @@ export default function AdminDashboard() {
         backgroundColor: "#f0f0f0",
       }}
     >
-      <Card sx={{ margin: "auto", width: 600, height: 600, px: 2, py: 1 }}>
+      <Card
+        sx={{
+          margin: "auto",
+          width: 600,
+          height: 600,
+          px: 2,
+          py: 1,
+        }}
+      >
         <CardContent>
           <Typography variant="h5" component="div">
             Admin Dashboard
@@ -107,6 +126,18 @@ export default function AdminDashboard() {
                 Upload an image by clicking the button below.
               </Typography>
             )}
+            {loading && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                }}
+              >
+                <CircularProgress color="primary" />
+              </Box>
+            )}
           </Box>
 
           <Box
@@ -126,6 +157,7 @@ export default function AdminDashboard() {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
+                disabled={loading}
               />
               Upload Image
             </Button>
@@ -134,6 +166,7 @@ export default function AdminDashboard() {
               color="primary"
               sx={{ marginTop: 2 }}
               onClick={handleSubmit}
+              disabled={loading}
             >
               Submit
             </Button>
@@ -143,11 +176,18 @@ export default function AdminDashboard() {
             color="primary"
             onClick={handleLogout}
             sx={{ marginTop: 2 }}
+            disabled={loading}
           >
             Logout
           </Button>
         </CardContent>
       </Card>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 }
