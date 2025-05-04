@@ -29,6 +29,35 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleSubmit = async () => {
+    if (!selectedImage) {
+      alert("Please select an image to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", selectedImage);
+
+    try {
+      const response = await fetch("/api/calculate", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      console.log("Response status:", response);
+      const data = await response.json();
+      console.log("Response data:", data);
+      alert("Image uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image.");
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -100,7 +129,12 @@ export default function AdminDashboard() {
               />
               Upload Image
             </Button>
-            <Button variant="contained" color="primary" sx={{ marginTop: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ marginTop: 2 }}
+              onClick={handleSubmit}
+            >
               Submit
             </Button>
           </Box>
