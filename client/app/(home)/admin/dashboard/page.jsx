@@ -42,13 +42,11 @@ export default function AdminDashboard() {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
-      console.log("Selected image:", file);
       if (previewURL) {
         URL.revokeObjectURL(previewURL);
       }
       const newPreviewUrl = URL.createObjectURL(file);
       setPreviewURL(newPreviewUrl);
-      console.log("Preview URL:", previewURL);
     }
   };
 
@@ -76,7 +74,6 @@ export default function AdminDashboard() {
         throw new Error("Network response was not ok");
       }
 
-      console.log("Response status:", response);
       const data = await response.json();
       console.log("Response data from GPT:", data);
 
@@ -106,7 +103,7 @@ export default function AdminDashboard() {
       }
 
       const dataGame = await responseGame.json();
-      console.log("Response data from game:", dataGame);
+
       if (dataGame.success) {
         setSnack({
           open: true,
