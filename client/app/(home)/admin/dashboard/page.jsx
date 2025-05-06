@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [snack, setSnack] = useState({
@@ -42,6 +43,12 @@ export default function AdminDashboard() {
     if (file) {
       setSelectedImage(file);
       console.log("Selected image:", file);
+      if (previewURL) {
+        URL.revokeObjectURL(previewURL);
+      }
+      const newPreviewUrl = URL.createObjectURL(file);
+      setPreviewURL(newPreviewUrl);
+      console.log("Preview URL:", previewURL);
     }
   };
 
@@ -71,7 +78,46 @@ export default function AdminDashboard() {
 
       console.log("Response status:", response);
       const data = await response.json();
-      console.log("Response data:", data);
+      console.log("Response data from GPT:", data);
+
+      const ranking = data.result.players;
+
+      console.log("Ranking data:", ranking);
+
+      if (!ranking || ranking.length === 0) {
+        setSnack({
+          open: true,
+          message: "No ranking data found.",
+          severity: "warning",
+        });
+        return;
+      }
+
+      const formDataGame = new FormData();
+      formDataGame.append("image", selectedImage);
+      formDataGame.append("ranking", JSON.stringify(ranking));
+      const responseGame = await fetch("/api/game", {
+        method: "POST",
+        body: formDataGame,
+      });
+
+      if (!responseGame.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const dataGame = await responseGame.json();
+      console.log("Response data from game:", dataGame);
+      if (dataGame.success) {
+        setSnack({
+          open: true,
+          message: "Image uploaded and game saved successfully!",
+          severity: "success",
+        });
+      }
+      if (previewURL) {
+        URL.revokeObjectURL(previewURL);
+      }
+      setPreviewURL(null);
       setSelectedImage(null);
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -129,7 +175,7 @@ export default function AdminDashboard() {
           >
             {selectedImage ? (
               <img
-                src={URL.createObjectURL(selectedImage)}
+                src={previewURL}
                 alt="Selected"
                 style={{
                   maxWidth: "100%",

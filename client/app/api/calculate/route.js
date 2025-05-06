@@ -29,7 +29,7 @@ export async function POST(req) {
         content: [
           {
             type: "text",
-            text: "This is the result of a Tetris game. Based on the image, provide the ranking of the game ONLY in a valid JSON format with integer keys 'ranking' and 'nickname' to display rankings for all players. No other explanation is needed.",
+            text: "This is the result of a Tetris game. Based on the image, provide the ranking of the game ONLY in a valid JSON format with integer keys 'ranking' and 'playerID' to display rankings for all players. No other explanation is needed.",
           },
           {
             type: "image_url",
@@ -55,10 +55,10 @@ export async function POST(req) {
                 items: {
                   type: "object",
                   properties: {
-                    nickname: {
+                    playerID: {
                       type: "string",
                       description:
-                        "Nickname of the player displayed in the image",
+                        "Player ID of the player displayed in the image",
                     },
                     ranking: {
                       type: "integer",
@@ -66,7 +66,7 @@ export async function POST(req) {
                         "Ranking of the player displayed in the image",
                     },
                   },
-                  required: ["nickname", "ranking"],
+                  required: ["playerID", "ranking"],
                 },
               },
             },
@@ -87,11 +87,6 @@ export async function POST(req) {
   } catch (err) {
     console.error("Failed to parse JSON:", err);
     jsonResult = { error: "Invalid JSON returned from model." };
-  }
-
-  try {
-    await dbConnect();
-    // Save the result to the database if needed
   }
 
   return NextResponse.json({ result: jsonResult }, { status: 200 });
