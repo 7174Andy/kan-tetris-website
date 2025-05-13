@@ -38,3 +38,17 @@ export async function POST(req) {
     );
   }
 }
+
+export async function GET() {
+  try {
+    await dbConnect();
+    const games = await Game.find({}).sort({ createdAt: -1 });
+    return NextResponse.json(games, { status: 200 });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json(
+      { success: false, message: "Failed to fetch games" },
+      { status: 500 }
+    );
+  }
+}
